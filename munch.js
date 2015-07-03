@@ -452,9 +452,11 @@ Muncher.prototype.parseCss = function(css) {
     });
 
     $.each(styles, function(o, style) {
-        style.selectors.forEach(function(selector) {
-            that.parseCssSelector(selector);
-        });
+        if (typeof style.selectors !== "undefined") {
+            style.selectors.forEach(function(selector) {
+                that.parseCssSelector(selector);
+            });
+        }
     });
 }
 
@@ -569,28 +571,30 @@ Muncher.prototype.rewriteCssString = function(css) {
     });
 
     $.each(styles, function(u, style) {
-        style.selectors.forEach(function(selector) {
-            var original = selector,
-                     tid = selector.match(/#[\w\-]+/gi),
-                     tcl = selector.match(/\.[\w\-]+/gi);
+        if (typeof style.selectors !== "undefined") {
+            style.selectors.forEach(function(selector) {
+                var original = selector,
+                         tid = selector.match(/#[\w\-]+/gi),
+                         tcl = selector.match(/\.[\w\-]+/gi);
 
-            if (tid) {
-                $.each(tid, function(i, match) {
-                    match = match.replace('#', '');
-                    if (that.ignoreIds.indexOf(match) > -1) return true;
-                    selector = selector.replace(new RegExp("#" + match.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"), "gi"), '#' + that.map["id"][match]);
-                });
-            }
-            if (tcl) {
-                $.each(tcl, function(o, match) {
-                    match = match.replace('.', '');
-                    if (that.ignoreClasses.indexOf(match) > -1) return true;
-                    selector = selector.replace(new RegExp("\\." + match.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"), "gi"), '.' + that.map["class"][match]);
-                });
-            }
+                if (tid) {
+                    $.each(tid, function(i, match) {
+                        match = match.replace('#', '');
+                        if (that.ignoreIds.indexOf(match) > -1) return true;
+                        selector = selector.replace(new RegExp("#" + match.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"), "gi"), '#' + that.map["id"][match]);
+                    });
+                }
+                if (tcl) {
+                    $.each(tcl, function(o, match) {
+                        match = match.replace('.', '');
+                        if (that.ignoreClasses.indexOf(match) > -1) return true;
+                        selector = selector.replace(new RegExp("\\." + match.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"), "gi"), '.' + that.map["class"][match]);
+                    });
+                }
 
-            text = text.replace(original, selector);
-        });
+                text = text.replace(original, selector);
+            });
+        }
     });
 
     return text;
