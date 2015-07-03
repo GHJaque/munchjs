@@ -498,7 +498,33 @@ Muncher.prototype.parseJs = function(js) {
 
 }
 
-/** 
+/**
+ * hideHtmlEntities
+ *
+ * hides html entities
+ *
+ * @param html String the html document
+ */
+Muncher.prototype.hideHtmlEntities = function(html) {
+    return html.replace(/(&)#\w+;/gi, function(match, p1) {
+        return match.replace(p1, "!"); }
+    );
+}
+
+/**
+ * unhideHtmlEntities
+ *
+ * unhides html entities
+ *
+ * @param html String the html document
+ */
+Muncher.prototype.unhideHtmlEntities = function(html) {
+    return html.replace(/(!)#\w+;/gi, function(match, p1) {
+        return match.replace(p1, "&"); }
+    );
+}
+
+/**
  * rewriteHtml
  *
  * replaces the ids and classes in the files specified
@@ -508,7 +534,7 @@ Muncher.prototype.parseJs = function(js) {
  */
 Muncher.prototype.rewriteHtml = function(html, to) {
     var     that = this,
-        document = jsdom(html),
+        document = jsdom(this.hideHtmlEntities(html)),
             html = $(document);
 
     that.files[to] = fs.statSync(to).size;
@@ -539,6 +565,7 @@ Muncher.prototype.rewriteHtml = function(html, to) {
     html = document.innerHTML;
     html = this.rewriteJsBlock(html);
     html = this.rewriteCssBlock(html, this.compress['view']);
+    html = this.unhideHtmlEntities(html);
 
     fs.writeFileSync(to + '.munched', (this.compress['view']) ? this.compressHtml(html): html);
 
