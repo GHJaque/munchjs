@@ -525,6 +525,17 @@ Muncher.prototype.unhideHtmlEntities = function(html) {
 }
 
 /**
+ * fixHtmlDoctype
+ *
+ * adds the doctype of the html document
+ *
+ * @param html String the html document
+ */
+Muncher.prototype.fixHtmlDoctype = function(html) {
+    return "<!doctype html>" + html;
+}
+
+/**
  * rewriteHtml
  *
  * replaces the ids and classes in the files specified
@@ -566,6 +577,7 @@ Muncher.prototype.rewriteHtml = function(html, to) {
     html = this.rewriteJsBlock(html);
     html = this.rewriteCssBlock(html, this.compress['view']);
     html = this.unhideHtmlEntities(html);
+    html = this.fixHtmlDoctype(html);
 
     fs.writeFileSync(to + '.munched', (this.compress['view']) ? this.compressHtml(html): html);
 
