@@ -319,7 +319,12 @@ Muncher.prototype.addClass = function(cl) {
     var addClass = function(cls) {
         if (that.ignoreClasses.indexOf(cls) > -1) return true; // shoul be a list of no-nos
         if (!that.map["class"][cls]) {
-            that.map["class"][cls] = hashids.encrypt(that.mapCounter); 
+            var hashid = hashids.encrypt(that.mapCounter).toString(),
+                strHashid = hashid + '';
+
+            if ('1234567890'.indexOf(strHashid.charAt(0)) > -1) hashid = '_' + hashid;
+
+            that.map["class"][cls] = hashid;
             that.mapCounter++;
         }
     }
